@@ -1,0 +1,11 @@
+1<?xml version="1.0" encoding="utf-8"?>
+2<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+3    package="org.opencv" >
+4
+5    <uses-sdk
+6        android:minSdkVersion="24"
+6-->E:\Nouveau dossier\GitHub\petanque\Code\AndroidPetanque\OpenCVLib454\src\main\AndroidManifest.xml
+7        android:targetSdkVersion="30" />
+7-->E:\Nouveau dossier\GitHub\petanque\Code\AndroidPetanque\OpenCVLib454\src\main\AndroidManifest.xml
+8
+9</manifest>

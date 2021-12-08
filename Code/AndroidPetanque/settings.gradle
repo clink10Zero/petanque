@@ -1,0 +1,4 @@
+rootProject.name = "AndroidPetanque"
+include ':app'
+include ':OpenCVLib454'
+include ':openCVLibrary3416'

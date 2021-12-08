@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:focusableInTouchMode="true"
+    tools:context=".MainActivity"
+    android:orientation="vertical">
+
+
+    <ScrollView android:id="@+id/scroll_view_renseigner_annexe"
+        android:layout_height="match_parent"
+        android:layout_width="match_parent">
+
+        <LinearLayout
+            android:id="@+id/content"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+
+            <LinearLayout
+                android:id="@+id/linear_layout_buttons_photos_renseigner_annexe"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal">
+
+                <Button
+                    android:id="@+id/btn_parcourir_rensgeiner_annexe"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:text="@string/parcourir"
+                    tools:ignore="ButtonStyle" />
+
+                <Button
+                    android:id="@+id/btn_prendre_photo_renseingner_annexe"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:text="@string/prendre_photo"
+                    tools:ignore="ButtonStyle" />
+
+                <Button
+                    android:id="@+id/btn_traiter"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:text="Traiter"
+                    android:visibility="gone"
+                    tools:ignore="ButtonStyle" />
+            </LinearLayout>
+
+            <ImageView
+                android:id="@+id/photo"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+            </ImageView>
+
+        </LinearLayout>
+    </ScrollView>
+</LinearLayout>
