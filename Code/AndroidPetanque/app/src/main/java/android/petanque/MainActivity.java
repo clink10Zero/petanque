@@ -7,7 +7,6 @@ import android.content.pm.PackageManager;
 import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
-import android.graphics.Matrix;
 import android.icu.text.SimpleDateFormat;
 import android.net.Uri;
 import android.os.Bundle;
@@ -19,18 +18,14 @@ import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.Button;
 import android.widget.ImageView;
-import android.widget.LinearLayout;
 import android.widget.Toast;
 
 import org.opencv.android.OpenCVLoader;
 import org.opencv.android.Utils;
-import org.opencv.core.CvException;
 import org.opencv.core.Mat;
-import org.opencv.core.MatOfFloat;
 import org.opencv.core.Point;
 import org.opencv.core.Scalar;
 import org.opencv.core.Size;
-import org.opencv.imgproc.Imgproc;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -38,10 +33,8 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
-
 import java.util.ArrayList;
 import java.util.Date;
-import java.util.List;
 import java.util.Locale;
 import java.util.Objects;
 
@@ -51,34 +44,20 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.FileProvider;
 
-import static android.graphics.Bitmap.Config.ARGB_8888;
-import static android.graphics.Bitmap.Config.RGBA_F16;
 import static android.graphics.Bitmap.Config.RGB_565;
-import static android.graphics.Color.BLUE;
-import static android.graphics.Color.GREEN;
-import static android.graphics.Color.RED;
-import static java.lang.Math.floor;
 import static java.lang.Math.pow;
 import static java.lang.Math.round;
 import static org.opencv.core.Core.FONT_HERSHEY_SIMPLEX;
-import static org.opencv.core.Core.absdiff;
-import static org.opencv.core.Core.merge;
-import static org.opencv.core.Core.normalize;
-import static org.opencv.core.Core.split;
 import static org.opencv.core.CvType.CV_16UC3;
-import static org.opencv.core.CvType.CV_8U;
-import static org.opencv.core.CvType.CV_8UC1;
 import static org.opencv.imgcodecs.Imgcodecs.imread;
 import static org.opencv.imgproc.Imgproc.COLOR_BGR2GRAY;
 import static org.opencv.imgproc.Imgproc.Canny;
-import static org.opencv.imgproc.Imgproc.GaussianBlur;
 import static org.opencv.imgproc.Imgproc.HOUGH_GRADIENT;
 import static org.opencv.imgproc.Imgproc.HoughCircles;
 import static org.opencv.imgproc.Imgproc.INTER_AREA;
 import static org.opencv.imgproc.Imgproc.bilateralFilter;
 import static org.opencv.imgproc.Imgproc.circle;
 import static org.opencv.imgproc.Imgproc.cvtColor;
-import static org.opencv.imgproc.Imgproc.dilate;
 import static org.opencv.imgproc.Imgproc.line;
 import static org.opencv.imgproc.Imgproc.medianBlur;
 import static org.opencv.imgproc.Imgproc.putText;
@@ -159,15 +138,11 @@ public class MainActivity extends AppCompatActivity {
                 medianBlur(gray,graytmp, 5);
                 bilateralFilter(graytmp,gray, 4, 30, 60);
 
-
-                Mat edges = new Mat(width,height,CV_16UC3);
-                Canny(gray,edges, 60, 120);
                 Mat circles = new Mat(width,height,CV_16UC3);
-                HoughCircles(gray, circles, HOUGH_GRADIENT, 1, 30, 140, 20, 0, 40);
+                HoughCircles(gray, circles, HOUGH_GRADIENT, 1, 30, 150, 20, 0, 40);
 
 
-                Mat circlesint = new Mat(width,height,CV_16UC3);
-                circles.convertTo(circlesint,0);
+
                 double[] cochonnet = circles.get(0,0);
                 int tailleCochonnet = 3;
 
@@ -180,21 +155,47 @@ public class MainActivity extends AppCompatActivity {
                 }
                  double taillepixel = tailleCochonnet/(cochonnet[2] * 2);
 
-                //affichage et calcule de distance
+                //affichage et calcul de distance
+                ArrayList<Integer> boule = new ArrayList<>();
+                ArrayList<Double> dist = new ArrayList<>();
                for(int k = 0; k<circles.cols(); k++){
                     double[] i = circles.get(0,k);
                     if (i[0] != cochonnet[0] & i[1] != cochonnet[1]) {
-                        circle(image, new Point(i[0], i[1]), (int)round(i[2]), new Scalar(0,255,0),2);
-                        circle(image, new Point(i[0], i[1]), 2, new Scalar(255,0,0),3);
+                        circle(image, new Point(i[0], i[1]), (int)round(i[2]), new Scalar(0,255,0),3);
 
                         double x = pow(i[0] - cochonnet[0], 2) * pow(taillepixel, 2);
                         double y = pow(i[1] - cochonnet[1], 2) * pow(taillepixel, 2);
                         double distance = Math.sqrt(x + y);
+                        boule.add(k);
+                        dist.add(distance);
 
-                       line(image,new Point(cochonnet[0], cochonnet[1]), new Point(i[0], i[1]), new Scalar(0,0,255),3);
-                       putText(image, (""+distance ),new Point (i[0], i[1]), FONT_HERSHEY_SIMPLEX, 2, new Scalar(0, 0, 0),1, 2);
+                       line(image,new Point(cochonnet[0], cochonnet[1]), new Point(i[0], i[1]), new Scalar(120,120,120),2);
+                    }
+                    else{
+                        circle(image, new Point(i[0], i[1]),  (int)round(i[2]), new Scalar(0,0,255),3);
                     }
                 }
+
+               for(int k = 0; k<dist.size(); k++) {
+                   for (int m = 1; m < dist.size()-k; m++) {
+                       int tmpInt = 0;
+                       double tmpDouble = 0.0;
+                       if (dist.get(m-1) > dist.get(m)) {
+                           tmpDouble = dist.get(m-1);
+                           tmpInt = boule.get(m-1);
+
+                           dist.set(m-1, dist.get(m));
+                           boule.set(m-1, boule.get(m));
+
+                           dist.set(m, tmpDouble);
+                           boule.set(m, tmpInt);
+                       }
+                   }
+               }
+
+               for(int i=0; i<dist.size();i++){
+                   putText(image, (""+(i+1) ),new Point (circles.get(0,boule.get((i)))[0],circles.get(0,boule.get((i)))[1]), FONT_HERSHEY_SIMPLEX, 2, new Scalar(255, 0, 0),3, 2);
+               }
 
                 Bitmap bmp = Bitmap.createBitmap(image.cols(),image.rows(),RGB_565);
                 Utils.matToBitmap(image, bmp,false);
